@@ -3,11 +3,11 @@
 
 #include "SDL.h"
 
-
 int main(int argc, char *argv[])
 {
     SDL_Window *window;
     SDL_Renderer *renderer;
+
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     /* Create window and renderer for given surface */
 
-    window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 544, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("SDL2-piggy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 544, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
     if(!window)
     {
@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
 
 
     SDL_Rect rectum;
-    rectum.x = 100;
+    rectum.x = 0;
     rectum.y = 100;
-    rectum.w = 100;
+    rectum.w = 960;
     rectum.h = 100;
 
     SDL_Rect pig_rectum;
@@ -76,7 +76,16 @@ int main(int argc, char *argv[])
     pig_rectum.w = 32;
     pig_rectum.h = 32;
 
+    Uint32 old_ticks = SDL_GetTicks();
+
     while (1) {
+        Uint32 new_ticks = SDL_GetTicks();
+        Uint32 frame_time = new_ticks - old_ticks;
+        old_ticks = new_ticks;
+
+        float fps = 1000.f / frame_time;
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,"FPS: %.2f", fps);
+
         SDL_Event e;
         if (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
@@ -92,7 +101,13 @@ int main(int argc, char *argv[])
 
         SDL_RenderFillRect(renderer, &rectum);
 
-        SDL_RenderCopy(renderer, texture, NULL, &pig_rectum);
+        for (int j = 0; j < 17; ++j)
+            for (int i = 0; i < 30; ++i)
+            {
+                pig_rectum.x = i * 32;
+                pig_rectum.y = j * 32;
+                SDL_RenderCopy(renderer, texture, NULL, &pig_rectum);
+            }
 
         SDL_RenderPresent(renderer);
     }
